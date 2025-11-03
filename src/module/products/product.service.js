@@ -1,0 +1,88 @@
+const slugify = require("slugify");
+const fileUploaderService = require("../../services/fileUploader.service");
+const ProductModel = require("./product.model");
+
+class ProductService {
+    transformCreateRequest = async (req) => {
+        try {
+            let data = req.body;
+            let images = []
+            if (data.images) {
+                images = [...data.images]
+            }
+            if (req.files) {
+                for (let image of req.files) {
+                    let filepath = await fileUploaderService.uploadFile(image.path, '/product')
+                    images.push(filepath);
+                }
+            }
+            data.images = images;
+            data.slug = slugify(data.name, {
+                lower: true,
+            });
+            data.price = data.price * 100;
+
+            //createdBY data
+
+            return data
+
+
+
+        } catch (exception) {
+            console.log("Error in transforming create product request", exception);
+            throw exception;
+        }
+
+    }
+    createProduct = async (data) => {
+        try {
+            const productObj = new ProductModel(data);
+            return await productObj.save();
+
+        } catch (exception) {
+            console.log("Error in creating product", exception);
+            throw exception;
+        }
+    }
+    getSingleByFilter = async (filter) => {
+
+
+        try {
+            const data = await ProductModel.findOne(filter)
+
+            //populate category
+
+
+            if (!data) {
+                throw {
+                    code: 404,
+                    message: "Product not found",
+                    status: "PRODUCT_NOT_FOUND"
+
+                }
+            }
+            return data
+
+        } catch (exception) {
+            console.log("Error in fetching single product by filter", exception);
+            throw exception;
+        }
+    }
+    getAllByFilter = async ({ skip = 0, limit = 20, filter = {} }) => {
+        try {
+            let data = await ProductModel.find(filter)
+                .populate("category", ["_id", "title", "slug"])
+                .sort({ _id: -1 })
+                .skip(skip)
+                .limit(limit)
+            return data;
+
+        } catch (exception) {
+            console.log("getAllByFilter error", exception)
+            throw exception
+        }
+    }
+
+}
+const productSvc = new ProductService();
+module.exports = productSvc;

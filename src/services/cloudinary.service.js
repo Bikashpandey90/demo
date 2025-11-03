@@ -1,0 +1,31 @@
+require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
+
+const fs = require('fs');
+
+class CloudinaryService {
+    constructor() {
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET
+        })
+    }
+    uploadFile = async (filePath, uploadDir = null) => {
+        try {
+            const response = await cloudinary.uploader.upload(filePath, {
+                unique_filename: true,
+                folder: uploadDir,
+                resource_type: "auto"
+            })
+            console.log(response)
+            fs.unlinkSync(filePath)
+            return response.secure_url;
+        } catch (exception) {
+            console.log("Cloudinary upload failed");
+            console.log(exception);
+            throw exception;
+        }
+    }
+}
+module.exports = CloudinaryService
