@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { schemaOpts } = require("./common/schema");
+const { schemaOpts, commonStr } = require("./common/schema");
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema({
         enum: ['admin', 'customer'],
         default: 'customer',
         required: true
-    }
+    },
+    ...commonStr
 
 
 }, schemaOpts)

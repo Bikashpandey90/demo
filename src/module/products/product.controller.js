@@ -60,6 +60,57 @@ class ProductController {
             next(exception)
         }
     }
+    update = async (req, res, next) => {
+        try {
+            const data = await productSvc.getSingleByFilter({
+                _id: req.params.id
+            })
+            const transformData = await productSvc.transformUpdateRequest(req, data)
+            const response = await productSvc.updateByFilter({
+                _id: req.params.id
+            }, transformData)
+
+            res.json({
+                detail: response,
+                message: "Product Updated Successfully",
+                status: "PRODUCT_UPDATE_SUCCESS",
+                options: null
+            })
+
+
+        } catch (exception) {
+            next(exception
+
+            )
+        }
+    }
+    delete = async (req, res, next) => {
+        try {
+            const data = await productSvc.getSingleByFilter({
+                _id: req.params.id
+            })
+            if (!data) {
+                throw {
+                    code: 404,
+                    messgae: "Product not found",
+                    status: "PRODUCT_NOT_FOUND"
+                }
+            }
+            const response = await productSvc.deleteByFilter({
+                _id: data._id
+            })
+            res.json({
+                detail: response,
+                message: "Product deleted successfully !",
+                status: "PRODUCT_DELETE_SUCCESS",
+                options: null
+            })
+
+        } catch (exception) {
+            next(exception)
+        }
+
+    }
 
 
 }

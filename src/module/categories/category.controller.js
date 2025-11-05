@@ -81,6 +81,50 @@ class CategoryController {
             next(exception)
         }
     }
+    update = async (req, res, next) => {
+        try {
+            const data = await categorySvc.getCategoryBySlug({
+                _id: req.params.id
+            })
+            const transformData = await categorySvc.transformUpdateRequest(req, data)
+            const response = await categorySvc.updateByFilter({
+                _id: data._id
+            }, transformData)
+            res.json({
+                detail: response,
+                message: "Category update success",
+                status: "CATEGORY_UPDATE_SUCCESS",
+                options: null
+            })
+        } catch (exception) {
+            next(exception)
+        }
+    }
+    delete = async (req, res, next) => {
+        try {
+            const data = await categorySvc.getCategoryBySlug({
+                _id: req.params.id
+            })
+            if (!data) {
+                throw {
+                    code: 404, message: "Category not found", status: "CATEGORY_NOT_FOUND"
+                }
+            }
+            const response = await categorySvc.deleteByFilter({
+                _id: data._id
+            })
+            res.json({
+                detail: response,
+                message: "Category deleted",
+                status: "CATEGORY_DELETE_SUCCESS",
+                options: null
+
+            })
+
+        } catch (exception) {
+            next(exception)
+        }
+    }
 }
 const categoryCtrl = new CategoryController();
 module.exports = categoryCtrl;

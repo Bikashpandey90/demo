@@ -22,6 +22,21 @@ class CategoryService {
         }
 
     }
+    transformUpdateRequest = async (req, categoryData) => {
+        try {
+            let data = req.body
+
+            if (req.file) {
+                data.image = await fileUploaderService.uploadFile(req.file.path, '/category')
+            }
+
+            return data
+
+        } catch (exception) {
+            console.log("transformUpdateRequest execption : ", exception)
+            throw exception
+        }
+    }
 
     createCategory = async (data) => {
         try {
@@ -57,6 +72,26 @@ class CategoryService {
         } catch (exception) {
             console.log("getCategoryBySlug exception", exception)
             throw exception
+        }
+    }
+    updateByFilter = async (filter, updateData) => {
+        try {
+            const response = await CategoryModel.findOneAndUpdate(filter, {
+                $set: updateData
+            })
+            return response
+        } catch (exception) {
+            console.log('updateByFilter exception', exception)
+            throw exception
+        }
+    }
+    deleteByFilter = async (filter) => {
+        try {
+            const response = await CategoryModel.findOneAndDelete(filter)
+            return response
+
+        } catch (exception) {
+            console.log('deletebyfilterexception: ', exception)
         }
     }
 

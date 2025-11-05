@@ -34,6 +34,27 @@ class ProductService {
         }
 
     }
+    transformUpdateRequest = async (req, productData) => {
+        try {
+            let data = req.body
+            let images = [
+                ...productData['images']
+            ]
+            if (req.files) {
+                for (let image of req.files) {
+                    let filepath = await fileUploaderService.uploadFile(image.path, '/product')
+                    images.push(filepath)
+                }
+            }
+            data.images = images
+            data.price = data.price * 100
+            return data
+
+        } catch (exception) {
+            console.log("transformUpdateRequest execption : ", exception)
+            throw exception
+        }
+    }
     createProduct = async (data) => {
         try {
             const productObj = new ProductModel(data);
@@ -82,6 +103,29 @@ class ProductService {
             throw exception
         }
     }
+
+    updateByFilter = async (filter, updateData) => {
+        try {
+            const response = await ProductModel.findOneAndUpdate(filter, {
+                $set: updateData
+            })
+            return response
+        } catch (exception) {
+            console.log('updateByFilter exception', exception)
+            throw exception
+        }
+    }
+    deleteByFilter = async (filter) => {
+        try {
+            const response = await ProductModel.findOneAndDelete(filter)
+            return response
+
+        } catch (exception) {
+            console.log('deleteByFilter', exception)
+            throw exception
+        }
+    }
+
 
 }
 const productSvc = new ProductService();
