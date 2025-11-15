@@ -18,8 +18,19 @@ const ProductSchema = new mongoose.Schema({
         ref: 'Category',
         required: true
     },
-    price: {
-        type: Number,
+    allergyAdvice: {
+        type: String,
+        required: true,
+        min: 100
+    },
+    vegNonVeg: {
+        type: String,
+        enum: ['veg', 'nonveg'],
+        default: 'nonveg',
+
+    },
+    ingridients: {
+        type: String,
         required: true,
         min: 100
     },
@@ -32,24 +43,48 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true
     }],
-    description: {
-        ingridients: {
+    nutritionalInfo: {
+        header: {
             type: String,
             required: true,
-            min: 100
+            min: 10
         },
-        nutritionalInfo: {
+        rows: [
+            {
+                values: String,
+                perValue: String,
+                perPacket: String
+            }
+        ],
+        footer: {
             type: String,
             required: true,
-            min: 100
+            min: 10
         },
-        direction: {
-            type: String,
-            required: true,
-            min: 100
-        }
+        links: [
+            {
+                type: String,
+
+            }
+        ]
 
     },
+    directionImages: [{
+        url: {
+            type: String,
+            required: true
+        },
+        order: {
+            type: Number,
+            required: true
+        },
+        description: {
+            type: String,
+            default: ''
+        },
+
+    }],
+
     ...commonStr
 
 

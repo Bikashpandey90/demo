@@ -1,16 +1,19 @@
 const express = require('express')
 const apiRouter = require('../router/router')
+const cors = require("cors");
+
 
 require('./db.config')
 
 
 const app = express()
+app.use(cors())
 
 
 app.use(express.json())
 app.use(express.urlencoded(
     {
-        extended: true
+        extended: false
     }
 ))
 

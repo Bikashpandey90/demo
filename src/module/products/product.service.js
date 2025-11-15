@@ -10,17 +10,33 @@ class ProductService {
             if (data.images) {
                 images = [...data.images]
             }
+            if (data.directionImages) {
+                try {
+                    // Parse JSON string coming from form-data
+                    data.directionImages = JSON.parse(data.directionImages);
+
+                    // Attach URLs later when processing files
+                    data.directionImages = data.directionImages.map(img => ({
+                        ...img,
+                        url: img.url || null
+                    }));
+
+                } catch (err) {
+                    console.log("Invalid directionImages JSON");
+                    data.directionImages = [];
+                }
+            }
             if (req.files) {
                 for (let image of req.files) {
                     let filepath = await fileUploaderService.uploadFile(image.path, '/product')
                     images.push(filepath);
                 }
             }
+
             data.images = images;
             data.slug = slugify(data.name, {
                 lower: true,
             });
-            data.price = data.price * 100;
 
             //createdBY data
 
