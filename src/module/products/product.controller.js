@@ -4,6 +4,7 @@ class ProductController {
 
     create = async (req, res, next) => {
         try {
+            console.log(req.body)
             const data = await productSvc.transformCreateRequest(req)
 
             const product = await productSvc.createProduct(data)

@@ -7,7 +7,10 @@ const { productCreateDTO, productUpdateDTO } = require("./product.validator");
 
 const productRouter = require("express").Router();
 //admin
-productRouter.post('/create-product', checkLogin, allowedRole('admin'), uploader().array('images'), bodyValidator(productCreateDTO), productCtrl.create)
+productRouter.post('/create-product', checkLogin, allowedRole('admin'), uploader().fields([
+    { name: 'images', maxCount: 5 },
+    { name: 'directionImages', maxCount: 5 }
+]), bodyValidator(productCreateDTO), productCtrl.create)
 
 productRouter.route('/:id')
     .patch(checkLogin, allowedRole('admin'), uploader().array('images'), bodyValidator(productUpdateDTO), productCtrl.update)

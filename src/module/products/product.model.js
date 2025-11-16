@@ -14,9 +14,10 @@ const ProductSchema = new mongoose.Schema({
         unique: true
     },
     category: {
+        type: String,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        required: true
+        // required: true
     },
     allergyAdvice: {
         type: String,
@@ -36,7 +37,6 @@ const ProductSchema = new mongoose.Schema({
     },
     tagline: {
         type: String,
-        max: 200,
         required: true
     },
     images: [{
@@ -76,7 +76,7 @@ const ProductSchema = new mongoose.Schema({
         },
         order: {
             type: Number,
-            required: true
+            // required: true
         },
         description: {
             type: String,

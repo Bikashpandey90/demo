@@ -14,7 +14,7 @@ const nutritionalInfoSchema = Joi.object({
 }).required();
 const directionImageSchema = Joi.array().items(
     Joi.object({
-        order: Joi.number().required(),
+        // order: Joi.number().required(),
         description: Joi.string().allow(""),
         // url is added after file upload → not required
     })
@@ -25,10 +25,10 @@ const productCreateDTO = Joi.object({
     status: Joi.string().regex(/^(active|inactive)$/).required().default('inactive'),
     category: Joi.string().required(),
     allergyAdvice: Joi.string().min(100).required(),
-    tagline: Joi.string().max(100).required(),
+    tagline: Joi.string().min(100).required(),
     vegNonVeg: Joi.string().valid("veg", "nonveg").default("nonveg"),
     ingridients: Joi.string().min(100).required(),
-    nutritionalInfo: nutritionalInfoSchema,
+    nutritionalInfo: Joi.string(),
     directionImages: directionImageSchema,
 
 }).unknown()

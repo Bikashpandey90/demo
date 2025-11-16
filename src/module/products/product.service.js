@@ -10,26 +10,52 @@ class ProductService {
             if (data.images) {
                 images = [...data.images]
             }
+            if (data.nutritionalInfo) {
+                data.nutritionalInfo = JSON.parse(data.nutritionalInfo);
+            }
             if (data.directionImages) {
                 try {
-                    // Parse JSON string coming from form-data
-                    data.directionImages = JSON.parse(data.directionImages);
-
-                    // Attach URLs later when processing files
-                    data.directionImages = data.directionImages.map(img => ({
-                        ...img,
-                        url: img.url || null
-                    }));
-
+                    if (data.directionImages) {
+                        data.directionImages = JSON.parse(data.directionImages);
+                    } else {
+                        data.directionImages = [];
+                    }
                 } catch (err) {
                     console.log("Invalid directionImages JSON");
                     data.directionImages = [];
                 }
             }
+            // if (req.files) {
+            //     for (let image of req.files) {
+            //         let filepath = await fileUploaderService.uploadFile(image.path, '/product')
+            //         images.push(filepath);
+            //     }
+            // }
             if (req.files) {
-                for (let image of req.files) {
-                    let filepath = await fileUploaderService.uploadFile(image.path, '/product')
-                    images.push(filepath);
+
+                // IMAGES
+                if (req.files.images) {
+                    for (let file of req.files.images) {
+                        let filepath = await fileUploaderService.uploadFile(file.path, '/product');
+                        images.push(filepath);
+                    }
+                }
+
+                // DIRECTION IMAGES FILES
+                if (req.files.directionImages) {
+
+                    // ensure directionImages is always an array
+                    if (!Array.isArray(data.directionImages)) {
+                        data.directionImages = [];
+                    }
+
+                    for (let file of req.files.directionImages) {
+                        let filepath = await fileUploaderService.uploadFile(file.path, '/product');
+
+                        data.directionImages.push({
+                            url: filepath
+                        });
+                    }
                 }
             }
 
