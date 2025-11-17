@@ -5,6 +5,7 @@ const { loginDTO } = require('./auth.validator')
 const authRouter = require('express').Router()
 
 authRouter.post('/login', bodyValidator(loginDTO), authCtrl.login)
+authRouter.get('/me', authCtrl.profile)
 
 
 module.exports = authRouter

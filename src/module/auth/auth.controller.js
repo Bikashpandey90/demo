@@ -62,6 +62,21 @@ class authController {
         }
     }
 
+    profile = async (req, res, next) => {
+        try {
+            res.json({
+                detail: req.authUser,
+                message: "Your Profile",
+                status: "YOUR_PROFILE",
+                options: null
+            })
+
+        } catch (exception) {
+            console.log("Profile exception : ", exception)
+            next(exception)
+        }
+    }
+
 }
 const authCtrl = new authController()
 module.exports = authCtrl

@@ -19,6 +19,18 @@ const CategorySchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    primaryColor: {
+        type: String,
+        required: true,
+        max: 7,
+        min: 7
+    },
+    secondaryColor: {
+        type: String,
+        required: true,
+        max: 7,
+        min: 7
+    },
     ...commonStr
 
 }, schemaOpts)
