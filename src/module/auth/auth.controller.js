@@ -64,6 +64,7 @@ class authController {
 
     profile = async (req, res, next) => {
         try {
+            console.log(req.authUser)
             res.json({
                 detail: req.authUser,
                 message: "Your Profile",

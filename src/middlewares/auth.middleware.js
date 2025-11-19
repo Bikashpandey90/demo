@@ -11,6 +11,7 @@ const checkLogin = async (req, res, next) => {
             }
         }
         token = token.split(' ').pop()
+
         const data = jwt.verify(token, process.env.JWT_SECRET)
 
         if (data.typ !== 'bearer') {
@@ -27,6 +28,7 @@ const checkLogin = async (req, res, next) => {
                 code: 401, message: "User does not exist", status: "USER_NOT_FOUND"
             }
         }
+        console.log(user)
         req.authUser = {
             _id: user._id,
             name: user.name,
