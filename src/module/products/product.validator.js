@@ -24,10 +24,10 @@ const productCreateDTO = Joi.object({
     name: Joi.string().min(3).max(100).required(),
     status: Joi.string().regex(/^(active|inactive)$/).required().default('inactive'),
     category: Joi.string().required(),
-    allergyAdvice: Joi.string().min(100).required(),
-    tagline: Joi.string().min(100).required(),
+    allergyAdvice: Joi.string().required(),
+    tagline: Joi.string().required(),
     vegNonVeg: Joi.string().valid("veg", "nonveg").default("nonveg"),
-    ingridients: Joi.string().min(100).required(),
+    ingridients: Joi.string().required(),
     nutritionalInfo: Joi.string(),
     directionImages: directionImageSchema,
 

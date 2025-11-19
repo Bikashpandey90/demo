@@ -17,12 +17,11 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        // required: true
+        required: true
     },
     allergyAdvice: {
         type: String,
         required: true,
-        min: 100
     },
     vegNonVeg: {
         type: String,
@@ -33,7 +32,6 @@ const ProductSchema = new mongoose.Schema({
     ingridients: {
         type: String,
         required: true,
-        min: 100
     },
     tagline: {
         type: String,

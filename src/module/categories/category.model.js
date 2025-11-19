@@ -12,7 +12,14 @@ const CategorySchema = new mongoose.Schema({
     image: {
         type: String,
         required: true
-
+    },
+    bowlImage: {
+        type: String,
+        required: true
+    },
+    ingridientsImage: {
+        type: String,
+        required: true
     },
     slug: {
         type: String,
@@ -30,6 +37,13 @@ const CategorySchema = new mongoose.Schema({
         required: true,
         max: 7,
         min: 7
+    },
+    backgroundColor: {
+        type: String,
+        required: true,
+        max: 7,
+        min: 7
+
     },
     ...commonStr
 
