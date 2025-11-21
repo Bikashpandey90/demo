@@ -29,6 +29,8 @@ const productCreateDTO = Joi.object({
     vegNonVeg: Joi.string().valid("veg", "nonveg").default("nonveg"),
     ingridients: Joi.string().required(),
     nutritionalInfo: Joi.string(),
+    primaryColor: Joi.string().min(7).max(7).required(),
+    secondaryColor: Joi.string().min(7).max(7).required(),
     directionImages: directionImageSchema,
 
 }).unknown()

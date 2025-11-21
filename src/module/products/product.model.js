@@ -41,6 +41,14 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true
     }],
+    primaryColor: {
+        type: String,
+        required: true
+    },
+    secondaryColor: {
+        type: String,
+        required: true
+    },
     nutritionalInfo: {
         header: {
             type: String,

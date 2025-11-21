@@ -112,6 +112,7 @@ class ProductService {
 
         try {
             const data = await ProductModel.findOne(filter)
+                .populate('category', ["title", "slug"])
 
             //populate category
 
@@ -134,7 +135,7 @@ class ProductService {
     getAllByFilter = async ({ skip = 0, limit = 20, filter = {} }) => {
         try {
             let data = await ProductModel.find(filter)
-                .populate("category", ["_id", "title", "slug"])
+                .populate("category", ["title", "slug"])
                 .sort({ _id: -1 })
                 .skip(skip)
                 .limit(limit)

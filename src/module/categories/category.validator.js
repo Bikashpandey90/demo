@@ -5,6 +5,8 @@ const categoryCreateDTO = Joi.object({
     status: Joi.string().regex(/^(active|inactive)$/).required().default('inactive'),
     primaryColor: Joi.string().min(7).max(7).required(),
     secondaryColor: Joi.string().min(7).max(7).required(),
+    backgroundColor: Joi.string().min(7).max(7).required(),
+
 
 
 }).unknown()

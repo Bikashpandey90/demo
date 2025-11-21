@@ -28,7 +28,6 @@ class CategoryController {
                     limit: 10,
                     filter: {
                         $and: [{ status: 'active' },
-
                         ]
                     }
                 }
@@ -44,6 +43,7 @@ class CategoryController {
 
         } catch (exception) {
             next(exception)
+            console.log(exception)
         }
     }
     fetchByCategory = async (req, res, next) => {
@@ -119,6 +119,23 @@ class CategoryController {
                 status: "CATEGORY_DELETE_SUCCESS",
                 options: null
 
+            })
+
+        } catch (exception) {
+            next(exception)
+        }
+    }
+    fetch = async (req, res, next) => {
+        try {
+            const id = req.params.id
+            const response = await categorySvc.getSingleByFilter({
+                _id: id
+            })
+            res.json({
+                detail: response,
+                message: "Category fetched successfully",
+                status: "CATEGORY_FETCHED",
+                options: null
             })
 
         } catch (exception) {

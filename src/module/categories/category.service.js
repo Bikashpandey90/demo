@@ -10,8 +10,27 @@ class CategoryService {
             data.slug = slugify(data.title, {
                 lower: true
             })
-            if (req.file) {
-                data.image = await fileUploaderService.uploadFile(req.file.path, '/category')
+            if (req.files) {
+                // data.image = await fileUploaderService.uploadFile(req.file.path, '/category')
+
+                if (req.files.image && req.files.image[0]) {
+                    data.image = await fileUploaderService.uploadFile(
+                        req.files.image[0].path,
+                        '/category'
+                    );
+                }
+                if (req.files.bowlImage && req.files.bowlImage[0]) {
+                    data.bowlImage = await fileUploaderService.uploadFile(
+                        req.files.bowlImage[0].path,
+                        '/category'
+                    );
+                }
+                if (req.files.ingridientsImage && req.files.ingridientsImage[0]) {
+                    data.ingridientsImage = await fileUploaderService.uploadFile(
+                        req.files.ingridientsImage[0].path,
+                        '/category'
+                    );
+                }
             }
 
             return data
@@ -92,6 +111,23 @@ class CategoryService {
 
         } catch (exception) {
             console.log('deletebyfilterexception: ', exception)
+        }
+    }
+    getSingleByFilter = async (filter) => {
+        try {
+            const response = await CategoryModel.findOne(filter)
+            if (!response) {
+                throw {
+                    code: 404,
+                    message: "Category not found",
+                    status: "CATEGORY_NOT_FOUND"
+
+                }
+            }
+            return response
+
+        } catch (exception) {
+            console.log('getSingleByfilterbyexception', exception)
         }
     }
 
