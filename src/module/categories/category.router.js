@@ -19,7 +19,11 @@ categoryRouter.get('/list-categories', categoryCtrl.list)
 
 
 categoryRouter.route('/:id')
-    .patch(checkLogin, allowedRole('admin'), uploader().single('image'), bodyValidator(categoryUpdateDTO), categoryCtrl.update)
+    .patch(checkLogin, allowedRole('admin'), uploader().fields([
+        { name: 'image', maxCount: 1 },
+        { name: 'bowlImage', maxCount: 1 },
+        { name: 'ingridientsImage', maxCount: 1 }
+    ]), bodyValidator(categoryUpdateDTO), categoryCtrl.update)
     .delete(checkLogin, allowedRole('admin'), categoryCtrl.delete)
     .get(checkLogin, allowedRole('admin'), categoryCtrl.fetch)
 

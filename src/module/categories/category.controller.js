@@ -86,6 +86,9 @@ class CategoryController {
             const data = await categorySvc.getCategoryBySlug({
                 _id: req.params.id
             })
+            if (!data) {
+                res.json({ code: 404, message: "Category not found", status: "CATEGORY_NOT_FOUND" })
+            }
             const transformData = await categorySvc.transformUpdateRequest(req, data)
             const response = await categorySvc.updateByFilter({
                 _id: data._id

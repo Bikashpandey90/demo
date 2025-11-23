@@ -45,8 +45,29 @@ class CategoryService {
         try {
             let data = req.body
 
-            if (req.file) {
-                data.image = await fileUploaderService.uploadFile(req.file.path, '/category')
+
+            if (req.files) {
+                if (req.files.image && req.files.image[0]) {
+                    data.image = await fileUploaderService.uploadFile(
+                        req.files.image[0].path,
+                        "/category"
+                    );
+                }
+
+                if (req.files.bowlImage && req.files.bowlImage[0]) {
+                    data.bowlImage = await fileUploaderService.uploadFile(
+                        req.files.bowlImage[0].path,
+                        "/category"
+                    );
+                }
+
+                if (req.files.ingridientsImage && req.files.ingridientsImage[0]) {
+                    data.ingridientsImage = await fileUploaderService.uploadFile(
+                        req.files.ingridientsImage[0].path,
+                        "/category"
+                    );
+                }
+
             }
 
             return data
