@@ -13,7 +13,12 @@ productRouter.post('/create-product', checkLogin, allowedRole('admin'), uploader
 ]), bodyValidator(productCreateDTO), productCtrl.create)
 
 productRouter.route('/:id')
-    .patch(checkLogin, allowedRole('admin'), uploader().array('images'), bodyValidator(productUpdateDTO), productCtrl.update)
+    .patch(checkLogin, allowedRole('admin'), uploader().fields(
+        [
+            { name: 'images', maxCount: 5 },
+            { name: 'directionImages', maxCount: 5 }
+        ]
+    ), bodyValidator(productUpdateDTO), productCtrl.update)
     .delete(checkLogin, allowedRole('admin'), productCtrl.delete)
 
 

@@ -70,15 +70,12 @@ class ProductController {
             const response = await productSvc.updateByFilter({
                 _id: req.params.id
             }, transformData)
-
             res.json({
                 detail: response,
                 message: "Product Updated Successfully",
                 status: "PRODUCT_UPDATE_SUCCESS",
                 options: null
             })
-
-
         } catch (exception) {
             next(exception
 

@@ -25,12 +25,7 @@ class ProductService {
                     data.directionImages = [];
                 }
             }
-            // if (req.files) {
-            //     for (let image of req.files) {
-            //         let filepath = await fileUploaderService.uploadFile(image.path, '/product')
-            //         images.push(filepath);
-            //     }
-            // }
+
             if (req.files) {
 
                 // IMAGES
@@ -79,17 +74,59 @@ class ProductService {
     transformUpdateRequest = async (req, productData) => {
         try {
             let data = req.body
+
+            if (data.nutritionalInfo) {
+                try {
+                    data.nutritionalInfo = JSON.parse(data.nutritionalInfo);
+                } catch (e) {
+                    console.log("Invalid nutritionalInfo JSON");
+                }
+
+            }
+            if (data.directionImages) {
+                try {
+                    data.directionImages = JSON.parse(data.directionImages);
+                } catch (err) {
+                    console.log("Invalid directionImages JSON");
+                    data.directionImages = productData.directionImages || [];
+                }
+
+            }
             let images = [
                 ...productData['images']
             ]
-            if (req.files) {
-                for (let image of req.files) {
-                    let filepath = await fileUploaderService.uploadFile(image.path, '/product')
-                    images.push(filepath)
+            let directionImages = [...(productData.directionImages || [])]
+
+            if (req.files?.images) {
+                const imageFiles = Array.isArray(req.files.images)
+                    ? req.files.images
+                    : [req.files.images];
+
+                for (let file of imageFiles) {
+                    let filepath = await fileUploaderService.uploadFile(
+                        file.path,
+                        "/product"
+                    );
+                    images.push(filepath);
                 }
             }
+
+            if (req.files?.directionImages) {
+                const directionFiles = Array.isArray(req.files.directionImages)
+                    ? req.files.directionImages
+                    : [req.files.directionImages];
+
+                for (let file of directionFiles) {
+                    let filepath = await fileUploaderService.uploadFile(
+                        file.path,
+                        "/product"
+                    );
+                    directionImages.push({ url: filepath });
+                }
+            }
+
             data.images = images
-            data.price = data.price * 100
+            data.directionImages = directionImages
             return data
 
         } catch (exception) {
@@ -114,7 +151,6 @@ class ProductService {
             const data = await ProductModel.findOne(filter)
                 .populate('category', ["title", "slug"])
 
-            //populate category
 
 
             if (!data) {
