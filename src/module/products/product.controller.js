@@ -66,6 +66,9 @@ class ProductController {
             const data = await productSvc.getSingleByFilter({
                 _id: req.params.id
             })
+            console.log("Existing Data:")
+            console.log(req.body)
+            console.log(req.files)
             const transformData = await productSvc.transformUpdateRequest(req, data)
             const response = await productSvc.updateByFilter({
                 _id: req.params.id

@@ -6,17 +6,22 @@ class ProductService {
     transformCreateRequest = async (req) => {
         try {
             let data = req.body;
-            let images = []
-            if (data.images) {
-                images = [...data.images]
-            }
+            // let images = []
+            // if (data.images) {
+            //     images = [...data.images]
+            // }
+            let directionFiles = []
             if (data.nutritionalInfo) {
                 data.nutritionalInfo = JSON.parse(data.nutritionalInfo);
             }
             if (data.directionImages) {
                 try {
                     if (data.directionImages) {
-                        data.directionImages = JSON.parse(data.directionImages);
+                        try {
+                            data.directionImages = JSON.parse(data.directionImages);
+                        } catch {
+                            data.directionImages = [];
+                        }
                     } else {
                         data.directionImages = [];
                     }
@@ -26,35 +31,88 @@ class ProductService {
                 }
             }
 
-            if (req.files) {
+            let productImages = data.images ? JSON.parse(data.images) : [];
+            let images = [];
 
-                // IMAGES
-                if (req.files.images) {
-                    for (let file of req.files.images) {
-                        let filepath = await fileUploaderService.uploadFile(file.path, '/product');
-                        images.push(filepath);
-                    }
-                }
+            // if (req.files) {
 
-                // DIRECTION IMAGES FILES
-                if (req.files.directionImages) {
+            //     // IMAGES
+            //     if (req.files?.images) {
+            //         for (let file of req.files.images) {
+            //             let filepath = await fileUploaderService.uploadFile(file.path, '/product');
+            //             images.push(filepath);
+            //         }
+            //     }
 
-                    // ensure directionImages is always an array
-                    if (!Array.isArray(data.directionImages)) {
-                        data.directionImages = [];
-                    }
+            //     // DIRECTION IMAGES FILES
+            //     if (req.files.directionImages) {
 
-                    for (let file of req.files.directionImages) {
-                        let filepath = await fileUploaderService.uploadFile(file.path, '/product');
+            //         // ensure directionImages is always an array
+            //         if (!Array.isArray(data.directionImages)) {
+            //             data.directionImages = [];
+            //         }
 
-                        data.directionImages.push({
-                            url: filepath
-                        });
-                    }
+            //         for (let file of req.files.directionImages) {
+            //             let filepath = await fileUploaderService.uploadFile(file.path, '/product');
+
+            //             data.directionImages.push({
+            //                 url: filepath
+            //             });
+            //         }
+            //     }
+            // }
+
+            if (req.files?.images) {
+                const uploadedFiles = Array.isArray(req.files.images)
+                    ? req.files.images
+                    : [req.files.images];
+
+                for (let file of uploadedFiles) {
+                    const url = await fileUploaderService.uploadFile(file.path, '/product');
+                    const match = productImages.find(img => img.fieldName === file.fieldName)
+                    const position = match ? match.position : images.length;
+                    images.push({
+                        url,
+                        position
+                    })
                 }
             }
 
+            (productImages || []).forEach(img => {
+                if (img.url) {
+                    images.push({
+                        url: img.url,
+                        position: img.position || 0
+                    })
+                }
+            })
+
+            images.sort((a, b) => a.position - b.position);
+
             data.images = images;
+
+            if (req.files?.directionImages) {
+                directionFiles = Array.isArray(req.files.directionImages)
+                    ? req.files.directionImages
+                    : [req.files.directionImages];
+
+            }
+
+            if (!Array.isArray(data.directionImages)) {
+                data.directionImages = [];
+            }
+            for (let file of directionFiles) {
+                const url = await fileUploaderService.uploadFile(file.path, '/product');
+                (data.directionImages || []).push({
+                    url,
+                    order: data.directionImages.length
+                })
+            }
+
+
+
+
+            // data.images = images;
             data.slug = slugify(data.name, {
                 lower: true,
             });
@@ -91,11 +149,16 @@ class ProductService {
                     data.directionImages = productData.directionImages || [];
                 }
 
+            } else {
+                data.directionImages = productData.directionImages || [];
             }
-            let images = [
-                ...productData['images']
-            ]
-            let directionImages = [...(productData.directionImages || [])]
+            // let images = [
+            //     ...productData['images']
+            // ]
+            // let directionImages = [...(productData.directionImages || [])]
+
+            let productImages = data.images ? JSON.parse(data.images) : [];
+            let images = [...(productData['images'] || [])];
 
             if (req.files?.images) {
                 const imageFiles = Array.isArray(req.files.images)
@@ -103,13 +166,34 @@ class ProductService {
                     : [req.files.images];
 
                 for (let file of imageFiles) {
-                    let filepath = await fileUploaderService.uploadFile(
+                    const url = await fileUploaderService.uploadFile(
                         file.path,
                         "/product"
                     );
-                    images.push(filepath);
+                    const match = productImages.find(img => img.fieldName === file.fieldName)
+                    const position = match ? match.position : images.length;
+
+                    images.push(
+                        { url, position }
+                    )
+
+                    // images.push(filepath);
                 }
             }
+            (productImages || []).forEach(img => {
+                if (img.url && !images.find(i => i.url === img.url)) {
+                    images.push({
+                        url: img.url,
+                        position: img.position ?? images.length
+                    })
+                }
+            })
+            images.sort((a, b) => a.position - b.position);
+            data.images = images
+
+            let directionImages = [...(productData.directionImages || [])];
+
+
 
             if (req.files?.directionImages) {
                 const directionFiles = Array.isArray(req.files.directionImages)
@@ -117,16 +201,38 @@ class ProductService {
                     : [req.files.directionImages];
 
                 for (let file of directionFiles) {
-                    let filepath = await fileUploaderService.uploadFile(
+                    const url = await fileUploaderService.uploadFile(
                         file.path,
                         "/product"
                     );
-                    directionImages.push({ url: filepath });
+
+                    const match = data.directionImages.find(x => x.fieldName === file.fieldName)
+                    const order = match ? match.order : directionImages.length;
+                    const description = match ? match.description : '';
+
+                    directionImages.push({
+                        url,
+                        order,
+                        description: match ? match?.description : ''
+                    })
+                    // directionImages.push({ url: filepath });
                 }
             }
 
-            data.images = images
+            (data.directionImages || []).forEach(img => {
+                if (img.url && !directionImages.find(i => i.url === img.url)) {
+                    directionImages.push({
+                        url: img.url,
+                        order: img.order,
+                        description: img.description || ''
+                    })
+                }
+            })
+            directionImages.sort((a, b) => a.order - b.order);
             data.directionImages = directionImages
+
+            // data.images = images
+            // data.directionImages = directionImages
             return data
 
         } catch (exception) {

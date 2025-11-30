@@ -38,9 +38,16 @@ const ProductSchema = new mongoose.Schema({
         required: true
     },
     images: [{
-        type: String,
-        required: true
-    }],
+        url: {
+            type: String,
+            required: true
+        },
+        position: {
+            type: Number,
+            required: true
+        }
+    }
+    ],
     primaryColor: {
         type: String,
         required: true
@@ -82,7 +89,7 @@ const ProductSchema = new mongoose.Schema({
         },
         order: {
             type: Number,
-            // required: true
+            required: true
         },
         description: {
             type: String,

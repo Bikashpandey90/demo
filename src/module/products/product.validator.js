@@ -50,6 +50,8 @@ const productUpdateDTO = Joi.object({
     primaryColor: Joi.string().min(7).max(7).required(),
     secondaryColor: Joi.string().min(7).max(7).required(),
     directionImages: directionImageSchema,
+    existingImages: Joi.array().items(Joi.string().uri()),
+    existingDirectionImages: Joi.array().items(Joi.string().uri()),
 })
 
 module.exports = {
