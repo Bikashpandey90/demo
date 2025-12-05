@@ -7,7 +7,17 @@ require('./db.config')
 
 
 const app = express()
-app.use(cors())
+app.use(cors({
+    origin: [
+        "https://momoguysfe.vercel.app",   // your frontend domain
+        "http://localhost:5173",         // for dev
+        "http://192.168.0.100:5173"           // for dev
+
+    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+}))
 
 
 app.use(express.json())

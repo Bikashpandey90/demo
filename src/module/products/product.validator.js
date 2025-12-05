@@ -52,6 +52,7 @@ const productUpdateDTO = Joi.object({
     directionImages: directionImageSchema,
     existingImages: Joi.array().items(Joi.string().uri()),
     existingDirectionImages: Joi.array().items(Joi.string().uri()),
+
 })
 
 module.exports = {
