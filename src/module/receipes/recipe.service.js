@@ -1,8 +1,8 @@
 const slugify = require("slugify");
 const fileUploaderService = require("../../services/fileUploader.service");
-const ProductModel = require("./product.model");
+const RecipeModel = require("./recipe.model");
 
-class ProductService {
+class RecipeService {
     transformCreateRequest = async (req) => {
         try {
             let data = req.body;
@@ -23,36 +23,9 @@ class ProductService {
             }
 
 
-            let productImages = data.images ? JSON.parse(data.images) : [];
+            let recipeImages = data.images ? JSON.parse(data.images) : [];
             let images = [];
 
-            // if (req.files) {
-
-            //     // IMAGES
-            //     if (req.files?.images) {
-            //         for (let file of req.files.images) {
-            //             let filepath = await fileUploaderService.uploadFile(file.path, '/product');
-            //             images.push(filepath);
-            //         }
-            //     }
-
-            //     // DIRECTION IMAGES FILES
-            //     if (req.files.directionImages) {
-
-            //         // ensure directionImages is always an array
-            //         if (!Array.isArray(data.directionImages)) {
-            //             data.directionImages = [];
-            //         }
-
-            //         for (let file of req.files.directionImages) {
-            //             let filepath = await fileUploaderService.uploadFile(file.path, '/product');
-
-            //             data.directionImages.push({
-            //                 url: filepath
-            //             });
-            //         }
-            //     }
-            // }
 
             if (req.files?.images) {
                 const uploadedFiles = Array.isArray(req.files.images)
@@ -60,8 +33,8 @@ class ProductService {
                     : [req.files.images];
 
                 for (let file of uploadedFiles) {
-                    const url = await fileUploaderService.uploadFile(file.path, '/product');
-                    const match = productImages.find(img => img.fieldName === file.fieldName)
+                    const url = await fileUploaderService.uploadFile(file.path, '/recipe');
+                    const match = recipeImages.find(img => img.fieldName === file.fieldName)
                     const position = match ? match.position : images.length;
                     images.push({
                         url,
@@ -70,7 +43,7 @@ class ProductService {
                 }
             }
 
-            (productImages || []).forEach(img => {
+            (recipeImages || []).forEach(img => {
                 if (img.url) {
                     images.push({
                         url: img.url,
@@ -96,7 +69,7 @@ class ProductService {
 
             for (let i = 0; i < directionFiles.length; i++) {
                 const file = directionFiles[i];
-                const url = await fileUploaderService.uploadFile(file.path, "/product");
+                const url = await fileUploaderService.uploadFile(file.path, "/recipe");
 
                 data.directionImages.push({
                     url,
@@ -104,25 +77,22 @@ class ProductService {
                 });
             }
 
-
-            // data.images = images;
             data.slug = slugify(data.name, {
                 lower: true,
             });
 
-            //createdBY data
 
             return data
 
 
 
         } catch (exception) {
-            console.log("Error in transforming create product request", exception);
+            console.log("Error in transforming create recipe request", exception);
             throw exception;
         }
 
     }
-    transformUpdateRequest = async (req, productData) => {
+    transformUpdateRequest = async (req, recipeData) => {
         try {
             let data = req.body
 
@@ -139,19 +109,15 @@ class ProductService {
                     data.directionImages = JSON.parse(data.directionImages);
                 } catch (err) {
                     console.log("Invalid directionImages JSON");
-                    data.directionImages = productData.directionImages || [];
+                    data.directionImages = recipeData.directionImages || [];
                 }
 
             } else {
-                data.directionImages = productData.directionImages || [];
+                data.directionImages = recipeData.directionImages || [];
             }
-            // let images = [
-            //     ...productData['images']
-            // ]
-            // let directionImages = [...(productData.directionImages || [])]
 
-            let productImages = data.images ? JSON.parse(data.images) : [];
-            let images = [...(productData['images'] || [])];
+            let recipeImages = data.images ? JSON.parse(data.images) : [];
+            let images = [...(recipeData['images'] || [])];
 
             if (req.files?.images) {
                 const imageFiles = Array.isArray(req.files.images)
@@ -161,9 +127,9 @@ class ProductService {
                 for (let file of imageFiles) {
                     const url = await fileUploaderService.uploadFile(
                         file.path,
-                        "/product"
+                        "/recipe"
                     );
-                    const match = productImages.find(img => img.fieldName === file.fieldName)
+                    const match = recipeImages.find(img => img.fieldName === file.fieldName)
                     const position = match ? match.position : images.length;
 
                     images.push(
@@ -173,7 +139,7 @@ class ProductService {
                     // images.push(filepath);
                 }
             }
-            (productImages || []).forEach(img => {
+            (recipeImages || []).forEach(img => {
                 if (img.url && !images.find(i => i.url === img.url)) {
                     images.push({
                         url: img.url,
@@ -184,7 +150,7 @@ class ProductService {
             images.sort((a, b) => a.position - b.position);
             data.images = images
 
-            let directionImages = [...(productData.directionImages || [])];
+            let directionImages = [...(recipeData.directionImages || [])];
 
 
 
@@ -196,7 +162,7 @@ class ProductService {
                 for (let file of directionFiles) {
                     const url = await fileUploaderService.uploadFile(
                         file.path,
-                        "/product"
+                        "/recipe"
                     );
 
                     const match = data.directionImages.find(x => x.fieldName === file.fieldName)
@@ -233,13 +199,13 @@ class ProductService {
             throw exception
         }
     }
-    createProduct = async (data) => {
+    createRecipe = async (data) => {
         try {
-            const productObj = new ProductModel(data);
-            return await productObj.save();
+            const recipeObj = new RecipeModel(data);
+            return await recipeObj.save();
 
         } catch (exception) {
-            console.log("Error in creating product", exception);
+            console.log("Error in creating recipe", exception);
             throw exception;
         }
     }
@@ -247,30 +213,28 @@ class ProductService {
 
 
         try {
-            const data = await ProductModel.findOne(filter)
-                .populate('category', ["title", "slug"])
+            const data = await RecipeModel.findOne(filter)
 
 
 
             if (!data) {
                 throw {
                     code: 404,
-                    message: "Product not found",
-                    status: "PRODUCT_NOT_FOUND"
+                    message: "Recipe not found",
+                    status: "RECIPE_NOT_FOUND"
 
                 }
             }
             return data
 
         } catch (exception) {
-            console.log("Error in fetching single product by filter", exception);
+            console.log("Error in fetching single recipe by filter", exception);
             throw exception;
         }
     }
     getAllByFilter = async ({ skip = 0, limit = 20, filter = {} }) => {
         try {
-            let data = await ProductModel.find(filter)
-                .populate("category", ["title", "slug"])
+            let data = await RecipeModel.find(filter)
                 .sort({ _id: -1 })
                 .skip(skip)
                 .limit(limit)
@@ -284,7 +248,7 @@ class ProductService {
 
     updateByFilter = async (filter, updateData) => {
         try {
-            const response = await ProductModel.findOneAndUpdate(filter, {
+            const response = await RecipeModel.findOneAndUpdate(filter, {
                 $set: updateData
             })
             return response
@@ -295,7 +259,7 @@ class ProductService {
     }
     deleteByFilter = async (filter) => {
         try {
-            const response = await ProductModel.findOneAndDelete(filter)
+            const response = await RecipeModel.findOneAndDelete(filter)
             return response
 
         } catch (exception) {
@@ -306,5 +270,5 @@ class ProductService {
 
 
 }
-const productSvc = new ProductService();
-module.exports = productSvc;
+const recipeSvc = new RecipeService();
+module.exports = recipeSvc;

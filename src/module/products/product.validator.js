@@ -50,8 +50,16 @@ const productUpdateDTO = Joi.object({
     primaryColor: Joi.string().min(7).max(7).required(),
     secondaryColor: Joi.string().min(7).max(7).required(),
     directionImages: directionImageSchema,
-    existingImages: Joi.array().items(Joi.string().uri()),
-    existingDirectionImages: Joi.array().items(Joi.string().uri()),
+    existingImages: Joi.alternatives().try(
+        Joi.array().items(Joi.object({ url: Joi.string().uri().required(), position: Joi.number().required() })),
+        Joi.string()
+    ),
+    existingDirectionImages: Joi.alternatives().try(
+        Joi.array().items(Joi.string().uri()),
+        Joi.string()
+    ),
+    images: Joi.string().optional(),
+    directionImages: Joi.string().optional(),
 
 })
 
