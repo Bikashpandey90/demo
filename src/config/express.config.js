@@ -10,13 +10,15 @@ const app = express()
 app.use(cors({
     origin: [
         "https://momoguysfe.vercel.app",
+        "https://momoguys-fullstack.vercel.app",
         "http://localhost:5173",
-        "http://192.168.0.100:5173"
+        "http://192.168.1.117:5173"
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 }))
+
 
 
 app.use(express.json())
